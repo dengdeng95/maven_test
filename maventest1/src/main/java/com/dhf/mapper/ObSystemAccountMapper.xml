@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dhf.dao.ObSystemAccountMapper" >
+  <resultMap id="BaseResultMap" type="com.dhf.model.ObSystemAccount" >
+    <id column="accountId" property="accountid" jdbcType="BIGINT" />
+    <result column="totalMoney" property="totalmoney" jdbcType="DECIMAL" />
+    <result column="investPersonName" property="investpersonname" jdbcType="VARCHAR" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="remark1" property="remark1" jdbcType="VARCHAR" />
+    <result column="remark2" property="remark2" jdbcType="VARCHAR" />
+    <result column="remark3" property="remark3" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    accountId, totalMoney, investPersonName, version, remark1, remark2, remark3
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from ob_system_account
+    where accountId = #{accountid,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from ob_system_account
+    where accountId = #{accountid,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.dhf.model.ObSystemAccount" >
+    insert into ob_system_account (accountId, totalMoney, investPersonName, 
+      version, remark1, remark2, 
+      remark3,investpersonId)
+    values (#{accountid,jdbcType=BIGINT}, #{totalmoney,jdbcType=DECIMAL}, #{investpersonname,jdbcType=VARCHAR}, 
+      #{version,jdbcType=INTEGER}, #{remark1,jdbcType=VARCHAR}, #{remark2,jdbcType=VARCHAR}, 
+      #{remark3,jdbcType=VARCHAR},#{investpersonId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dhf.model.ObSystemAccount" >
+    insert into ob_system_account
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="accountid != null" >
+        accountId,
+      </if>
+      <if test="totalmoney != null" >
+        totalMoney,
+      </if>
+      <if test="investpersonname != null" >
+        investPersonName,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="remark1 != null" >
+        remark1,
+      </if>
+      <if test="remark2 != null" >
+        remark2,
+      </if>
+      <if test="remark3 != null" >
+        remark3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="accountid != null" >
+        #{accountid,jdbcType=BIGINT},
+      </if>
+      <if test="totalmoney != null" >
+        #{totalmoney,jdbcType=DECIMAL},
+      </if>
+      <if test="investpersonname != null" >
+        #{investpersonname,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="remark1 != null" >
+        #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        #{remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="remark3 != null" >
+        #{remark3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dhf.model.ObSystemAccount" >
+    update ob_system_account
+    <set >
+      <if test="totalmoney != null" >
+        totalMoney = #{totalmoney,jdbcType=DECIMAL},
+      </if>
+      <if test="investpersonname != null" >
+        investPersonName = #{investpersonname,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        version = version + 1,
+      </if>
+      <if test="remark1 != null" >
+        remark1 = #{remark1,jdbcType=VARCHAR},
+      </if>
+      <if test="remark2 != null" >
+        remark2 = #{remark2,jdbcType=VARCHAR},
+      </if>
+      <if test="remark3 != null" >
+        remark3 = #{remark3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where accountId = #{accountid,jdbcType=BIGINT} 
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dhf.model.ObSystemAccount" >
+    update ob_system_account
+    set totalMoney = #{totalmoney,jdbcType=DECIMAL},
+      investPersonName = #{investpersonname,jdbcType=VARCHAR},
+      version = version+1,
+      remark1 = #{remark1,jdbcType=VARCHAR},
+      remark2 = #{remark2,jdbcType=VARCHAR},
+      remark3 = #{remark3,jdbcType=VARCHAR}
+    where accountId = #{accountid,jdbcType=BIGINT} and version = #{version,jdbcType=INTEGER}
+  </update>
+  <select id="selectInvestId" resultMap="BaseResultMap" parameterType="int">
+  	select * from ob_system_account where investpersonId = #{investpersonId}
+  </select>
+</mapper>

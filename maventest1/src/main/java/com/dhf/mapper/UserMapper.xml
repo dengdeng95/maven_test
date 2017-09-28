@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dhf.dao.UserMapper">
+	<resultMap type="com.dhf.model.User" id="userResultMap">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="age" column="age" />
+		<result property="card" column="card" />
+		<result property="password" column="password" />
+	</resultMap>
+
+	<insert id="save" parameterType="com.dhf.model.User" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into user_per(name,age,card,password)
+		value(#{name,jdbcType=VARCHAR},#{age,jdbcType=VARCHAR},#{card,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR});
+	</insert>
+	
+	<insert id="insertSelective" parameterType="com.dhf.model.User" >
+    insert into user_per
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+	  <if test="id != null" >
+        id,
+      </if>
+	  <if test="name != null" >
+        name,
+      </if>
+	  <if test="age != null" >
+        age,
+      </if>
+	  <if test="card != null" >
+        card,
+      </if>
+	  <if test="password != null" >
+        password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	  <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+	  <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+	  <if test="age != null" >
+        #{age,jdbcType=VARCHAR},
+      </if>
+	  <if test="card != null" >
+        #{card,jdbcType=VARCHAR},
+      </if>
+	  <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+	<select id="findAllUser" resultMap="userResultMap" resultType="com.dhf.model.User">
+		select * from user_per
+	</select>
+
+	<select id="selectId" resultMap="userResultMap" parameterType="int">
+		select * from user_per where id=#{id}
+	</select>
+
+	<delete id="deleteId" parameterType="int">
+		delete from user_per where
+		id=#{id}
+	</delete>
+
+	<update id="update" parameterType="com.dhf.model.User">
+		update user_per set
+		<if test="name!=null">name = #{name,jdbcType=VARCHAR},</if>
+		<if test="age!=null">age = #{age,jdbcType=VARCHAR},</if>
+		<if test="card!=null">card = #{card,jdbcType=VARCHAR}</if>
+		<if test="password!=null">password = #{password,jdbcType=VARCHAR}</if>
+		where id = #{id}
+	</update>
+
+	<select id="pager" resultMap="userResultMap" resultType="com.dhf.model.User">
+		select *
+		from user_per limit #{startSize},5
+	</select>
+	
+	<!-- 查询一条信息，用于登录 -->
+	<select id="select_login" resultMap="userResultMap">
+		select * from user_per where name=#{0} and  password=#{1}
+	</select>
+</mapper>

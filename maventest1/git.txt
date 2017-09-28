@@ -1,0 +1,19 @@
+https://www.iteblog.com/idea/
+
+上传到Coding
+git init
+git add *
+git commit -m "first commit"
+git remote add origin git@git.coding.net:dengdeng_/maventest.git (第一次提交需要origin)
+git push -u origin master
+
+从Coding下载到本地
+git init
+git remote add git@git.coding.net:dengdeng_/maventest.git
+git pull git@git.coding.net:dengdeng_/maventest.git master
+
+修改代码后提交
+git add *
+git commit -m "first commit"
+git pull
+git push -u origin master

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+      http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-3.2.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+      http://www.springframework.org/schema/aop 
+	  http://www.springframework.org/schema/aop/spring-aop-3.2.xsd 
+	  http://www.springframework.org/schema/tx 
+	  http://www.springframework.org/schema/tx/spring-tx.xsd ">
+
+	<!-- 启用注解    详情看 http://blog.csdn.net/wangkai0681080/article/details/8447916-->  
+    <!-- <context:annotation-config />   -->
+    
+	<!-- 注解扫描包 -->
+	<context:component-scan base-package="com.dhf.controller"/>
+	<!-- <context:component-scan base-package="com.dhf">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
+	</context:component-scan> -->
+	
+	<!-- 开启注解 -->
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
+	<!-- 对静态资源放行 -->
+	<mvc:resources mapping="/static/**" location="/static/" />
+	<!-- 配置静态资源，直接映射到对应的文件夹，不被DispatcherServlet处理，3.04新增功能，需要重新设置spring-mvc-3.0.xsd -->
+	<!-- <mvc:resources mapping="/img/**" location="/img/" />
+	<mvc:resources mapping="/js/**" location="/js/" />
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/html/**" location="/html/" /> -->
+
+	<!-- 定义跳转的文件的前后缀 ，视图模式配置 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 这里的配置我的理解是自动给后面action的方法return的字符串加上前缀和后缀，变成一个 可用的url地址 -->
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<!-- 该 BeanPostProcessor 将自动起作用，对标注 @Autowired 的 Bean 进行自动注入 -->
+	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+	
+	<!-- 国际化操作 拦截器 必需配置,可以和其它国际化方式通用 -->  
+	<mvc:interceptors>
+		<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" /> 
+	</mvc:interceptors>
+	<!-- <bean id="defaultUrlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">  
+	　　<property name="interceptors" ref="localeChangeInterceptor" />  
+	<property name="defaultEncoding" value="UTF-8"/>
+	　　<property name="order">  
+	　　　　<value>1</value>  
+	　　</property>  
+	</bean> -->
+	<!-- 配置国际化资源文件路径 -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename">
+            <!-- 定义消息资源文件的相对路径 -->
+            <value>messages/message</value>
+        </property>
+        <property name="cacheSeconds" value="1800"></property>
+    </bean>
+    <!-- 基于Cookie的本地化解析器 -->
+     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+       <!-- 设置最大有效时间，如果是-1，则不存储，浏览器关闭后即失效，默认为Integer.MAX_INT-->
+       <property name="cookieMaxAge" value="604800"/>
+       <property name="defaultLocale" value="zh_CN"/>
+       <!-- 设置cookieName名称，可以根据名称通过js来修改设置，也可以像上面演示的那样修改设置，默认的名称为 类名+LOCALE（
+       		即：org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE-->
+       <property name="cookieName" value="Language"></property>
+     </bean>
+    <!-- 基于Session的本地化解析器 -->
+    <!--<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />-->
+	
+	
+	
+	<!-- aop切面 -->
+	<bean id="myAuthAspect" class="com.dhf.aop.MyAuthAspect"/>
+	
+	<!-- 创建切面/AOP編程 -->
+	<!-- proxy-target-class属性有两个值：true或者false。默认状态下，proxy-target-class属性的值为false，
+	那么被代理类是基于javaSE（JDK）的动态代理（一般被代理类会实现接口）；如果显式的设置了proxy-target-class属性的值为true，
+	那么被代理类就将基于cglib动态代理（spring框架中的代理）。但是我发现我的被代理类是实现了接口的，
+	按常理说被代理类是可以用JDK代理的，但是仍然报错，因此，当proxy-target-class属性的值为默认值(false)无法代理被代理类时，
+	需要显式的设定proxy-target-class的值为true，设定为cglib代理，上面出现的问题就解决了。 -->
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="aop" expression="execution(* com.dhf.controller.UserController.selectId(..))"/>
+		<aop:aspect ref="myAuthAspect">
+			<!-- 环绕通知 -->
+			<aop:around method="isAspect"  pointcut-ref="aop" />
+		</aop:aspect>
+	</aop:config> 
+
+	<!-- <aop:aspectj-autoproxy proxy-target-class="true"/> -->
+		
+	<!-- 引入同文件夹下的redis属性配置文件 -->
+    <import resource="classpath:redis/redis-context.xml"/>
+	<!-- 引入同文件夹下的shiro属性配置文件 -->
+    <!-- <import resource="classpath:shiro/spring-shiro.xml"/> -->
+    
+    <import resource="classpath:rabbitmq/rabbitmq_customer.xml" />
+    <import resource="classpath:rabbitmq/rabbitmq_producer.xml" />
+</beans>
+ 
