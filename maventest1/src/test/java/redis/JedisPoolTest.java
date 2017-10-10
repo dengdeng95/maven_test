@@ -11,9 +11,9 @@ public class JedisPoolTest {
 	public static synchronized JedisPool getInstance(){
 		if(jedisPool == null){
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-			jedisPoolConfig.setMaxActive(1000);
+			jedisPoolConfig.setMaxTotal(1000);
 			jedisPoolConfig.setMaxIdle(32);
-			jedisPoolConfig.setMaxWait(100*1000);
+			jedisPoolConfig.setMaxWaitMillis(100*1000);
 			
 			jedisPool = new JedisPool("127.0.0.1",6379);
 		}
